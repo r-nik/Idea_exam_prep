@@ -1,15 +1,30 @@
-- uses: actions/checkout@v4
+name: .NET CI
 
-- name: Setup .NET
-  uses: actions/setup-dotnet@v4
-  with:
-    dotnet-version: 8.0.x
+on:
+  push:
+    branches:
+      - main
+      - master
+  pull_request:
 
-- name: Restore
-  run: dotnet restore
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-- name: Build
-  run: dotnet build --no-restore
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-- name: Test
-  run: dotnet test --no-build
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --no-restore --configuration Release
+
+      - name: Run tests
+        run: dotnet test --no-build --configuration Release
